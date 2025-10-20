@@ -1,0 +1,108 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-product-category
+      author: you
+      context: dev
+      changes:
+        # product
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name_th
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: "numeric(14,2)"   # ต้องมีเครื่องหมายคำพูด
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: images_json
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # category
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # constraints & indexes
+        - addUniqueConstraint:
+            tableName: product
+            columnNames: "name_th, name_en"   # ต้องมีเครื่องหมายคำพูด
+            constraintName: uq_product_names
+
+        - createIndex:
+            tableName: product
+            indexName: idx_product_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: category
+            indexName: idx_category_parent
+            columns:
+              - column:
+                  name: parent_id
+
+      rollback:
+        - dropTable:
+            tableName: product
+        - dropTable:
+            tableName: category
